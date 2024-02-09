@@ -24,7 +24,7 @@ export default function Component() {
 
   const getAuthorizationUrl = () => {
     const clientId = 'f30935dbf75343dfa95d0910742027ad';
-    const redirectUri = 'http://localhost:3000';
+    const redirectUri = 'http://localhost:3000/';
     const scopes = 'playlist-read-private user-read-email';
 
     return `https://accounts.spotify.com/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${encodeURIComponent(scopes)}&response_type=token`;
