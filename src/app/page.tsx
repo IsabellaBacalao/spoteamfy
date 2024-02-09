@@ -1,24 +1,50 @@
-
-/**
- * v0 by Vercel.
- * @see https://v0.dev/t/lug5HD2ATyZ
- * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
- */
 "use client"
+import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button"
 import { CardTitle, CardHeader, CardContent, Card } from "@/components/ui/card"
 import { ResponsiveBar } from "@nivo/bar"
 
-export default function Component() {
+export default function Component() {  
+  const [accessToken, setAccessToken] = useState(null);
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.hash.substring(1));
+    const token = urlParams.get("access_token");
+  
+    if (token) {
+      // Stocker le jeton d'accès dans l'état local
+      setAccessToken(token); // Ajoutez "as string" pour forcer TypeScript à accepter null
+    }
+  }, []);
+
+  const handleLogin = () => {
+    // Rediriger l'utilisateur vers la page d'autorisation Spotify
+    window.location.href = getAuthorizationUrl();
+  };
+
+  const getAuthorizationUrl = () => {
+    const clientId = 'f30935dbf75343dfa95d0910742027ad';
+    const redirectUri = 'http://localhost:3000';
+    const scopes = 'playlist-read-private user-read-email';
+
+    return `https://accounts.spotify.com/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${encodeURIComponent(scopes)}&response_type=token`;
+  };
+
   return (
     <div className="bg-[#121212] text-white min-h-screen p-8">
       <header className="flex justify-between items-center mb-8">
         <h1 className="text-4xl font-bold">Spoteamfy</h1>
         <nav>
-          <Button className="mr-4" variant="ghost">
-            Sign In
-          </Button>
-          <Button variant="secondary">Sign Up</Button>
+          {accessToken ? (
+            <span>User is logged in</span>
+          ) : (
+            <>
+              <Button className="mr-4" variant="ghost" onClick={handleLogin}>
+                Sign In
+              </Button>
+              <Button variant="secondary">Sign Up</Button>
+            </>
+          )}
         </nav>
       </header>
       <main className="grid grid-cols-3 gap-8">
