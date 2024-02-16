@@ -23,7 +23,7 @@ export default function Component() {
   };
 
   const getAuthorizationUrl = () => {
-    const clientId = 'f30935dbf75343dfa95d0910742027ad';
+    const clientId = '1cba597e55d94b3d87ee781a30363ed7';
     const redirectUri = 'http://localhost:3000/';
     const scopes = 'playlist-read-private user-read-email';
 
@@ -36,7 +36,11 @@ export default function Component() {
         <h1 className="text-4xl font-bold">Spoteamfy</h1>
         <nav>
           {accessToken ? (
-            <span>User is logged in</span>
+              <img
+                alt="Profile picture"
+                className="h-8 w-8 rounded-full"
+                src="https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228"
+              />
           ) : (
             <>
               <Button className="mr-4" variant="ghost" onClick={handleLogin}>
