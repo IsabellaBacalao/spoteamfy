@@ -19,6 +19,26 @@ export default function Component() {
     }
   }, []);
 
+  const handleLogin = () => {
+    // Rediriger l'utilisateur vers la page d'autorisation Spotify
+    window.location.href = getAuthorizationUrl();
+  };
+
+  const handleLogout = () => {
+    // Déconnecter l'utilisateur en réinitialisant le jeton d'accès
+    setAccessToken('');
+  };
+
+  const getAuthorizationUrl = () => {
+    const clientId = '9707531cd3a04695935120e738853d73';
+    const redirectUri = 'http://localhost:3000/';
+    const scopes = 'playlist-read-private user-read-email';
+
+    
+    return `https://accounts.spotify.com/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${encodeURIComponent(scopes)}&response_type=token`;
+  };
+
+
   useEffect(() => {
     const getSpotifyUserProfile = async () => {
       try {
@@ -44,18 +64,6 @@ export default function Component() {
     }
   }, [accessToken]);
 
-  const handleLogin = () => {
-    // Rediriger l'utilisateur vers la page d'autorisation Spotify
-    window.location.href = getAuthorizationUrl();
-  };
-
-  const getAuthorizationUrl = () => {
-    const clientId = '1cba597e55d94b3d87ee781a30363ed7';
-    const redirectUri = 'http://localhost:3000/';
-    const scopes = 'playlist-read-private user-read-email';
-
-    return `https://accounts.spotify.com/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${encodeURIComponent(scopes)}&response_type=token`;
-  };
   
   return (
     <div className="bg-[#121212] text-white min-h-screen p-8">
@@ -63,11 +71,16 @@ export default function Component() {
         <h1 className="text-4xl font-bold">Spoteamfy</h1>
         <nav>
           {accessToken ? (
-            <img
-            alt="Profile picture"
-            className="h-8 w-8 rounded-full"
-            src={profileImageURL}
-          />
+           <>
+           <img
+             alt="Profile picture"
+             className="h-8 w-8 rounded-full"
+             src={profileImageURL}
+           />
+           <Button className="ml-4" variant="ghost" onClick={handleLogout}>
+             Log Out
+           </Button>
+         </>
           ) : (
             <>
               <Button className="mr-4" variant="ghost" onClick={handleLogin}>
