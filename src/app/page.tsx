@@ -107,7 +107,7 @@ export default function Component() {
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
-              <Data id={7}/>
+              <Data id={6}/>
               </div>
             </CardContent>
           </Card>

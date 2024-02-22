@@ -54,7 +54,7 @@ const Data: React.FC<DataProps> = ({ id }) => {
         type: "Rythmique & Technique", 
         animal: "Pieuvre", 
         description: "Connue pour sa capacité à manipuler plusieurs objets simultanément, symbolise la complexité technique et la précision rythmique.",
-        imageURL: 'https://images.pexels.com/photos/5986729/pexels-photo-5986729.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+        imageURL: 'https://images.pexels.com/photos/4890170/pexels-photo-4890170.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
       },
     {   
         id: 7, 
