@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { CardTitle, CardHeader, CardContent, Card } from "@/components/ui/card";
 import { ResponsiveBar } from "@nivo/bar";
 import axios from "axios";
+import Data from './data';
+import { PieChart } from 'react-minimal-pie-chart';
 
 export default function Component() {
   const [accessToken, setAccessToken] = useState('');
@@ -20,12 +22,10 @@ export default function Component() {
   }, []);
 
   const handleLogin = () => {
-    // Rediriger l'utilisateur vers la page d'autorisation Spotify
     window.location.href = getAuthorizationUrl();
   };
 
   const handleLogout = () => {
-    // Déconnecter l'utilisateur en réinitialisant le jeton d'accès
     setAccessToken('');
   };
 
@@ -71,16 +71,16 @@ export default function Component() {
         <h1 className="text-4xl font-bold">Spoteamfy</h1>
         <nav>
           {accessToken ? (
-            <>
+            <div className="flex justify-between items-center">
               <img
                 alt="Profile picture"
-                className="h-8 w-8 rounded-full"
+                className="h-8 w-8 mr-4 rounded-full"
                 src={profileImageURL}
               />
               <Button className="ml-4" variant="ghost" onClick={handleLogout}>
                 Log Out
               </Button>
-            </>
+            </div>
           ) : (
             <>
               <Button className="mr-4" variant="ghost" onClick={handleLogin}>
@@ -91,45 +91,37 @@ export default function Component() {
           )}
         </nav>
       </header>
-      <main className="grid grid-cols-3 gap-8">
+      <main className="grid grid-cols-2 gap-8">
         <section className="space-y-6">
           <Card className="bg-[#1DB954] text-black">
             <CardHeader>
-              <CardTitle>Music Maystes</CardTitle>
+              <CardTitle>Top artistes</CardTitle>
+              <span className="text-sm">Survolez le diagramme avec votre souris pour voir vos artistes préférés </span>
             </CardHeader>
             <CardContent>
-              <BarChart className="w-full h-[150px]" />
-              <div className="mt-4">
-                <Button className="w-full" variant="default">
-                  Analyze
-                </Button>
-              </div>
+              <CustomBarChart className="w-full h-[150px]" />
             </CardContent>
           </Card>
           <Card className="bg-[#1DB954] text-black">
             <CardHeader>
-              <CardTitle>Metankle</CardTitle>
+              <CardTitle>Profil</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
-                <div className="flex flex-col">
-                  <span className="font-bold">Who to philosophtuis</span>
-                  <span className="text-sm">Enjoy by Deb</span>
-                </div>
-                <Button variant="default">Listen</Button>
+              <Data id={6}/>
               </div>
             </CardContent>
           </Card>
         </section>
-        <section>
+        <section className="space-y-6">
           <Card className="bg-black">
             <CardContent>
-              <div className="flex flex-col items-center">
+              <div className="flex flex-col ">
                 <img
                   alt="Philosopher"
                   className="h-[300px] w-[300px] rounded-full"
                   height="300"
-                  src="/placeholder.svg"
+                  color='white'
                   style={{
                     aspectRatio: "300/300",
                     objectFit: "cover",
@@ -137,45 +129,27 @@ export default function Component() {
                   width="300"
                 />
                 <div className="flex items-center mt-4">
-                  <PodcastIcon className="text-[#1DB954] mr-2" />
-                  <h2 className="text-2xl font-bold">Philosopher</h2>
+                  <h2 className="text-2xl font-bold bg-white">Cluster</h2>
                 </div>
                 <div className="flex mt-4">
                   <Button className="mr-2" variant="secondary">
                     Save to library
                   </Button>
-                  <Button variant="ghost">Share</Button>
+                  <Button variant="secondary">Share</Button>
                 </div>
               </div>
             </CardContent>
           </Card>
-        </section>
-        <section className="space-y-6">
+  
           <Card className="bg-[#1DB954] text-black">
             <CardHeader>
-              <CardTitle>Stening of Philosophteh</CardTitle>
+              <CardTitle>Mes genres</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-center">
                 <div className="flex flex-col">
-                  <span className="font-bold">Save your tracks</span>
-                  <span className="text-sm">Discover Something</span>
+                  <CustomPieChart className="w-full" />
                 </div>
-                <Button variant="default">Listen</Button>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="bg-[#1DB954] text-black">
-            <CardHeader>
-              <CardTitle>Philosofito</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <div className="flex flex-col">
-                  <span className="font-bold">Merlay steter</span>
-                  <span className="text-sm">Start Your Philos's Hits...</span>
-                </div>
-                <Button variant="default">Listen</Button>
               </div>
             </CardContent>
           </Card>
@@ -185,78 +159,115 @@ export default function Component() {
   )
 }
 
-function BarChart(props) {
-  return (
-    <div {...props}>
-      <ResponsiveBar
-        data={[
-          { name: "Jan", count: 111 },
-          { name: "Feb", count: 157 },
-          { name: "Mar", count: 129 },
-          { name: "Apr", count: 150 },
-          { name: "May", count: 119 },
-          { name: "Jun", count: 72 },
-        ]}
-        keys={["count"]}
-        indexBy="name"
-        margin={{ top: 0, right: 0, bottom: 40, left: 40 }}
-        padding={0.3}
-        colors={["#2563eb"]}
-        axisBottom={{
-          tickSize: 0,
-          tickPadding: 16,
-        }}
-        axisLeft={{
-          tickSize: 0,
-          tickValues: 4,
-          tickPadding: 16,
-        }}
-        gridYValues={4}
-        theme={{
-          tooltip: {
-            chip: {
-              borderRadius: "9999px",
+function CustomBarChart(props: any) {
+    const [chartData, setChartData] = useState([]);
+    const [waiting, setWaiting] = useState(true);
+  
+    useEffect(() => {
+      const urlParams = new URLSearchParams(window.location.hash.substring(1));
+      const token = urlParams.get("access_token");
+  
+      const fetchData = async () => {
+        try {
+          if (!token) {
+            console.error('Access token not available.');
+            return;
+          }
+      
+          const response = await axios.get('http://localhost:8000/top-artists/20', {
+            headers: {
+              'Authorization': `Bearer ${token}`,
             },
-            container: {
-              fontSize: "12px",
-              textTransform: "capitalize",
-              borderRadius: "6px",
-            },
-          },
-          grid: {
-            line: {
-              stroke: "#f3f4f6",
-            },
-          },
-        }}
-        tooltipLabel={({ id }) => `${id}`}
-        enableLabel={false}
-        role="application"
-        ariaLabel="A bar chart showing data"
-      />
-    </div>
-  )
-}
+          });
+      
+          // Utilisation directe des données de l'API (pas besoin de la remise en forme ici)
+          setChartData(response.data);
+        } catch (error : any) {
+          console.error('Error fetching chart data:', error.response || error.message || error);
+        }finally {
+          setWaiting(false);
+        }
+      };
+  
+      fetchData();
+    }, []); 
 
+    if (waiting) {
+      return <div>Loading...</div>;
+    }
+  
+    return (
+      <div {...props}>
+        <ResponsiveBar
+          data={chartData}
+          keys={["count"]}
+          indexBy="name"
+          colors={["#000000"]}
+          enableLabel={false}
+        />
+      </div>
+    );
+  }
 
-function PodcastIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="11" r="1" />
-      <path d="M11 17a1 1 0 0 1 2 0c0 .5-.34 3-.5 4.5a.5.5 0 0 1-1 0c-.16-1.5-.5-4-.5-4.5Z" />
-      <path d="M8 14a5 5 0 1 1 8 0" />
-      <path d="M17 18.5a9 9 0 1 0-10 0" />
-    </svg>
-  )
-}
+  function CustomPieChart(props: any) {
+    const [chartPieData, setChartPieData] = useState([]);
+    const [waiting, setWaiting] = useState(true);
+  
+    useEffect(() => {
+      const urlParams = new URLSearchParams(window.location.hash.substring(1));
+      const token = urlParams.get("access_token");
+  
+      function getGrayColor(i: number) {
+        const baseColor = 200;
+        const step = Math.floor(baseColor / 19);
+        const grayValue = baseColor - (i * step);
+        const color = `rgb(${grayValue}, ${grayValue}, ${grayValue})`;
+        return color;
+      }
+
+      const fetchData = async () => {
+        try {
+          if (!token) {
+            console.error('Access token not available.');
+            return;
+          }
+      
+          const response = await axios.get('http://localhost:8000/top-genres', {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          });
+      
+          setChartPieData(response.data.map((dataEntry: any, index: number) => ({
+            ...dataEntry,
+            color: getGrayColor(index),
+          })));
+        } catch (error : any) {
+          console.error('Error fetching chart data:', error.response || error.message || error);
+        }finally {
+          setWaiting(false);
+        }
+      };
+  
+      fetchData();
+    }, []); 
+
+    if (waiting) {
+      return <div>Loading...</div>;
+    }
+  
+    return (
+      <div {...props}>
+        <PieChart
+          data={chartPieData}
+          labelStyle={{
+            fontSize: '5px',
+            fontFamily: 'sans-serif',
+          }}
+          label={({ dataEntry }) => dataEntry.title}
+
+          
+        />
+      </div>
+    );
+  }
