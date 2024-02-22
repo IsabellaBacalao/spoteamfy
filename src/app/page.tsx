@@ -30,12 +30,12 @@ export default function Component() {
   };
 
   const getAuthorizationUrl = () => {
-    const clientId = '9707531cd3a04695935120e738853d73';
+    const clientId = '5d4637c1e36b4b88b2d8c53990a215f7';
     const redirectUri = 'http://localhost:3000/';
-    const scopes = 'playlist-read-private user-read-email';
+    const scopes = 'playlist-read-private user-read-email user-library-read';
+    const grantType = 'client_credentials';
 
-    
-    return `https://accounts.spotify.com/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${encodeURIComponent(scopes)}&response_type=token`;
+    return `https://accounts.spotify.com/authorize?client_id=${clientId}&grant_type=${grantType}&redirect_uri=${redirectUri}&scope=${encodeURIComponent(scopes)}&response_type=token`;
   };
 
 
@@ -64,23 +64,23 @@ export default function Component() {
     }
   }, [accessToken]);
 
-  
+
   return (
     <div className="bg-[#121212] text-white min-h-screen p-8">
       <header className="flex justify-between items-center mb-8">
         <h1 className="text-4xl font-bold">Spoteamfy</h1>
         <nav>
           {accessToken ? (
-           <>
-           <img
-             alt="Profile picture"
-             className="h-8 w-8 rounded-full"
-             src={profileImageURL}
-           />
-           <Button className="ml-4" variant="ghost" onClick={handleLogout}>
-             Log Out
-           </Button>
-         </>
+            <>
+              <img
+                alt="Profile picture"
+                className="h-8 w-8 rounded-full"
+                src={profileImageURL}
+              />
+              <Button className="ml-4" variant="ghost" onClick={handleLogout}>
+                Log Out
+              </Button>
+            </>
           ) : (
             <>
               <Button className="mr-4" variant="ghost" onClick={handleLogin}>
