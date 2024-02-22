@@ -5,6 +5,7 @@ import { CardTitle, CardHeader, CardContent, Card } from "@/components/ui/card";
 import { ResponsiveBar } from "@nivo/bar";
 import axios from "axios";
 import Data from './data';
+import { PieChart } from 'react-minimal-pie-chart';
 
 export default function Component() {
   const [accessToken, setAccessToken] = useState('');
@@ -142,15 +143,13 @@ export default function Component() {
   
           <Card className="bg-[#1DB954] text-black">
             <CardHeader>
-              <CardTitle>Philosofito</CardTitle>
+              <CardTitle>Mes genres</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-center">
                 <div className="flex flex-col">
-                  <span className="font-bold">Merlay steter</span>
-                  <span className="text-sm">Start Your Philos's Hits...</span>
+                  <CustomPieChart className="w-full" />
                 </div>
-                <Button variant="default">Listen</Button>
               </div>
             </CardContent>
           </Card>
@@ -176,9 +175,9 @@ function CustomBarChart(props: any) {
           }
       
           const response = await axios.get('http://localhost:8000/top-artists/20', {
-            // headers: {
-            //   'Authorization': `Bearer ${token}`,
-            // },
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
           });
       
           // Utilisation directe des données de l'API (pas besoin de la remise en forme ici)
@@ -205,6 +204,69 @@ function CustomBarChart(props: any) {
           indexBy="name"
           colors={["#000000"]}
           enableLabel={false}
+        />
+      </div>
+    );
+  }
+
+  function CustomPieChart(props: any) {
+    const [chartPieData, setChartPieData] = useState([]);
+    const [waiting, setWaiting] = useState(true);
+  
+    useEffect(() => {
+      const urlParams = new URLSearchParams(window.location.hash.substring(1));
+      const token = urlParams.get("access_token");
+  
+      function getGrayColor(i: number) {
+        const baseColor = 200;
+        const step = Math.floor(baseColor / 19);
+        const grayValue = baseColor - (i * step);
+        const color = `rgb(${grayValue}, ${grayValue}, ${grayValue})`;
+        return color;
+      }
+
+      const fetchData = async () => {
+        try {
+          if (!token) {
+            console.error('Access token not available.');
+            return;
+          }
+      
+          const response = await axios.get('http://localhost:8000/top-genres', {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          });
+      
+          setChartPieData(response.data.map((dataEntry: any, index: number) => ({
+            ...dataEntry,
+            color: getGrayColor(index),
+          })));
+        } catch (error : any) {
+          console.error('Error fetching chart data:', error.response || error.message || error);
+        }finally {
+          setWaiting(false);
+        }
+      };
+  
+      fetchData();
+    }, []); 
+
+    if (waiting) {
+      return <div>Loading...</div>;
+    }
+  
+    return (
+      <div {...props}>
+        <PieChart
+          data={chartPieData}
+          labelStyle={{
+            fontSize: '5px',
+            fontFamily: 'sans-serif',
+          }}
+          label={({ dataEntry }) => dataEntry.title}
+
+          
         />
       </div>
     );
