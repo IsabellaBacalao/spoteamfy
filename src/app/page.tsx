@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import { Button } from "@/components/ui/button";
 import { CardTitle, CardHeader, CardContent, Card } from "@/components/ui/card";
 import { ResponsiveBar } from "@nivo/bar";
@@ -10,6 +10,8 @@ import { PieChart } from 'react-minimal-pie-chart';
 export default function Component() {
   const [accessToken, setAccessToken] = useState('');
   const [profileImageURL, setProfileImageURL] = useState();
+  const [animalClusterId, setAnimalClusterId] = useState(8);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.hash.substring(1));
@@ -28,6 +30,42 @@ export default function Component() {
   const handleLogout = () => {
     setAccessToken('');
   };
+
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.hash.substring(1));
+    const token = urlParams.get("access_token");
+
+    const fetchData = async () => {
+      try {
+        if (!token) {
+          console.error('Access token not available.');
+          return;
+        }
+
+        const response = await axios.get('http://localhost:8000/cluster-graph', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+
+        if (response.data && typeof response.data.animal_cluster === 'number') {
+          const animalClusterValue = response.data.animal_cluster;
+
+          setAnimalClusterId(animalClusterValue);
+        } else {
+          console.error('Réponse inattendue de la route /cluster-graph:', response.data);
+        }
+      } catch (error : any) {
+        console.error('Error fetching cluster graph data:', error.response || error.message || error);
+      }
+      finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []); 
 
   const getAuthorizationUrl = () => {
     const clientId = '5d4637c1e36b4b88b2d8c53990a215f7';
@@ -108,34 +146,27 @@ export default function Component() {
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
-              <Data id={6}/>
+              {isLoading ? (
+                <p>Loading...</p>
+              ) : (
+                <Data id={animalClusterId} />
+              )}
               </div>
             </CardContent>
           </Card>
         </section>
-        <section className="space-y-6">
-          <Card className="bg-black">
+        <section className="space-y-6">          
+        <Card className="bg-black" style={{ paddingTop: '1.5rem' }}>
             <CardContent>
               <div className="flex flex-col ">
                 <img
-                  alt="Philosopher"
-                  className="h-[300px] w-[300px] rounded-full"
-                  height="300"
-                  color='white'
-                  style={{
-                    aspectRatio: "300/300",
-                    objectFit: "cover",
-                  }}
-                  width="300"
-                />
+                    alt="Cluster picture "
+                    className="h-80 w-84"
+                    src={"https://cdn.discordapp.com/attachments/1202912121357340683/1210489763719811082/Capture_decran_2024-02-23_a_08.13.30.png?ex=65eabf71&is=65d84a71&hm=486d572c6c0a96625c00fb4d039e5110e57de82fd382bd3cd8ede61ec0d6c5c5&"}
+                  />
                 <div className="flex items-center mt-4">
                   <h2 className="text-2xl font-bold bg-white">Cluster</h2>
-                </div>
-                <div className="flex mt-4">
-                  <Button className="mr-2" variant="secondary">
-                    Save to library
-                  </Button>
-                  <Button variant="secondary">Share</Button>
+                className="h-8 w-8 mr-4 rounded-full"
                 </div>
               </div>
             </CardContent>
@@ -158,6 +189,7 @@ export default function Component() {
     </div>
   )
 }
+
 
 function CustomBarChart(props: any) {
     const [chartData, setChartData] = useState([]);

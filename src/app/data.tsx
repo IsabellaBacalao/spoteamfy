@@ -63,6 +63,13 @@ const Data: React.FC<DataProps> = ({ id }) => {
         description: "Les chants des baleines sont mystérieux et émotionnellement expressifs, avec une profondeur naturelle et une richesse acoustique représentant l'acousticité, la liveness, et la speechiness.",
         imageURL: 'https://images.pexels.com/photos/3309869/pexels-photo-3309869.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
       },
+      {   
+        id: 8, 
+        type: "Inconnu", 
+        animal: "?", 
+        description: "Connectez-vous et trouvez votre profil animal",
+        imageURL: 'https://cdn-icons-png.flaticon.com/512/1705/1705681.png',
+      },
   ];
 
   const filteredData = id ? data.filter((row) => row.id === id) : data;
